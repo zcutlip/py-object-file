@@ -4,7 +4,7 @@ import binascii
 import cmd
 import commands
 
-import dwarf
+from pydwarf import dwarf
 
 import optparse
 import os
@@ -17,9 +17,8 @@ import sys
 import uuid
 
 from .util import dict_utils
-from .util import file_extract
 from .util import term_colors
-
+from .util import file_extract
 
 # Mach header "magic" constants
 MH_MAGIC                    = 0xfeedface
