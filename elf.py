@@ -5,9 +5,9 @@ import StringIO
 import sys
 
 # Local imports
-import dict_utils
-import dwarf
-import file_extract
+from .util import dict_utils
+from .util import file_extract
+
 
 # e_ident size and indices.
 EI_MAG0 = 0        # File identification index.
