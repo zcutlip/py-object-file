@@ -3,9 +3,9 @@
 import binascii
 import cmd
 import commands
-import dict_utils
+
 import dwarf
-import file_extract
+
 import optparse
 import os
 import re
@@ -14,8 +14,13 @@ import struct
 import string
 import StringIO
 import sys
-import term_colors
 import uuid
+
+from .util import dict_utils
+from .util import file_extract
+from .util import term_colors
+
+
 # Mach header "magic" constants
 MH_MAGIC                    = 0xfeedface
 MH_CIGAM                    = 0xcefaedfe
@@ -850,7 +855,7 @@ class Mach:
             self.flags.bits = bits
 
             if self.is_64_bit():
-                data.get_uint32() # Skip reserved word in mach_header_64
+                data.get_uint32()  # Skip reserved word in mach_header_64
 
             for i in range(0,self.ncmds):
                 lc = self.unpack_load_command (data)
@@ -2087,8 +2092,8 @@ class ScrollText(Frame):
         self.text['xscroll'] = self.h_scroll.set
 
         # Place the text view and scroll bars into this frame
-        self.columnconfigure(0, weight=1) # Make sure the text view always resizes horizontally to take up all space
-        self.rowconfigure(0, weight=1) # Make sure the text view always resizes vertically to take up all space
+        self.columnconfigure(0, weight=1)  # Make sure the text view always resizes horizontally to take up all space
+        self.rowconfigure(0, weight=1)  # Make sure the text view always resizes vertically to take up all space
         self.text.grid(in_=self, row=0, column=0, sticky=NSEW)
         self.v_scroll.grid(in_=self, row=0, column=1, rowspan=2, sticky=NS)
         self.h_scroll.grid(in_=self, row=1, column=0, sticky=EW)
@@ -2104,7 +2109,7 @@ class DelegateTree(Frame):
         Frame.__init__(self, parent)
         self.sort_column_id = None
         self.sort_type = 'string'
-        self.sort_direction = 1 # 0 = None, 1 = Ascending, 2 = Descending
+        self.sort_direction = 1  # 0 = None, 1 = Ascending, 2 = Descending
         self.pack(expand=Y, fill=BOTH)
         self.delegate = delegate
         self.column_dicts = column_dicts
@@ -2199,7 +2204,7 @@ class DelegateTree(Frame):
                     first = False
                 else:
                     values.append(column_value)
-            item_id = self.tree.insert (parent_id, # root item has an empty name
+            item_id = self.tree.insert (parent_id,  # root item has an empty name
                                         END,
                                         text=name,
                                         values=values,
@@ -2210,7 +2215,7 @@ class DelegateTree(Frame):
 
     def _sort_item_dicts(self, item_dicts):
         if self.sort_column_id is None or self.sort_direction == 0:
-            return item_dicts # No sorting needs to happen
+            return item_dicts  # No sorting needs to happen
         if self.sort_type == 'number':
             return sorted(item_dicts, reverse=self.sort_direction==2, key=lambda k, c=self.sort_column_id: int(k.get(c, 0), 0))
         else:
