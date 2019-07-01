@@ -1,4 +1,4 @@
-# Python DWARF Parser
+# Python Object File Parser
 
 ## Description
 
