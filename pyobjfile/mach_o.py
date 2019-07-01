@@ -485,7 +485,8 @@ class Mach:
             file_extractor = file_extract.FileExtract(f, '=')
             self.unpack(file_extractor)
             #f.close()
-        except IOError as (errno, strerror):
+        except IOError as ioe:
+            errno, strerror = ioe.args
             print "I/O error({0}): {1}".format(errno, strerror)
         except ValueError:
             print "Could not convert data to an integer."
