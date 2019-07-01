@@ -2072,8 +2072,34 @@ class Mach:
 
 
 import Tkinter
-from Tkinter import *
-from ttk import *
+# from Tkinter import *
+
+from Tkinter import (
+    Text,
+    NONE,
+    VERTICAL,
+    HORIZONTAL,
+    NSEW,
+    NS,
+    EW,
+    END,
+    Y,
+    BOTH,
+    TOP,
+    W,
+    StringVar,
+    Tk
+)
+
+from ttk import (
+    Frame,
+    Scrollbar,
+    Treeview,
+    OptionMenu,
+    Notebook,
+    # String,
+    Style
+)
 
 class ScrollText(Frame):
     def __init__(self, parent):
