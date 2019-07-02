@@ -276,7 +276,7 @@ def dump_memory(base_addr, data, num_per_line, outfile):
     ascii_str = ''
     i = 0
     while i < data_len:
-        print >>outfile, int_to_hex32(addr+i),
+        print >>outfile, int_to_hex32(addr + i),
         bytes_left = data_len - i
         if bytes_left >= num_per_line:
             curr_data_len = num_per_line
@@ -289,12 +289,12 @@ def dump_memory(base_addr, data, num_per_line, outfile):
         # current line with no spaces between bytes
         t = iter(curr_hex_str)
         # Print hex bytes separated by space
-        print >>outfile, ' '.join(a+b for a,b in zip(t, t)),
+        print >>outfile, ' '.join(a + b for a,b in zip(t, t)),
         # Print two spaces
         print >>outfile, '  ',
         # Calculate ASCII string for bytes into 'ascii_str'
         ascii_str = ''
-        for j in range(i, i+curr_data_len):
+        for j in range(i, i + curr_data_len):
             ch = data[j]
             if ch in string.printable and ch not in string.whitespace:
                 ascii_str += '%c' % (ch)
@@ -490,7 +490,7 @@ class Mach:
             print "I/O error({0}): {1}".format(errno, strerror)
         except ValueError:
             print "Could not convert data to an integer."
-        except:
+        except Exception:
             print "Unexpected error:", sys.exc_info()[0]
             raise
 
@@ -877,8 +877,7 @@ class Mach:
                 lc.unpack(self, data)
             elif (lc_command == LC_LOAD_DYLIB or
                   lc_command == LC_ID_DYLIB or
-                  lc_command == LC_LOAD_WEAK_DYLIB or
-                  lc_command == LC_REEXPORT_DYLIB):
+                  lc_command == LC_LOAD_WEAK_DYLIB or lc_command == LC_REEXPORT_DYLIB):
                 lc = Mach.DylibLoadCommand(lc)
                 lc.unpack(self, data)
             elif (lc_command == LC_LOAD_DYLINKER or
@@ -948,8 +947,8 @@ class Mach:
                             if lhs_data == rhs_data:
                                 print 'ok'
                             else:
-                                lhs_data_len = len(lhs_data)
-                                rhs_data_len = len(rhs_data)
+                                # lhs_data_len = len(lhs_data)
+                                # rhs_data_len = len(rhs_data)
                                 # if lhs_data_len < rhs_data_len:
                                 #     if lhs_data == rhs_data[0:lhs_data_len]:
                                 #         print 'section data for %s matches the first %u bytes' % (lhs_section.sectname, lhs_data_len)
@@ -1010,7 +1009,7 @@ class Mach:
                 print "%-12s %-10s %-14s %#8u %#8.8x %s" % (self.magic, self.arch, self.filetype, self.ncmds, self.sizeofcmds, self.flags)
 
         def get_dwarf(self):
-            if self.dwarf is -1:
+            if self.dwarf == -1:
                 self.dwarf = None
                 debug_abbrev_data = self.get_section_contents_by_name('__debug_abbrev')
                 debug_info_data = self.get_section_contents_by_name('__debug_info')
@@ -1153,7 +1152,8 @@ class Mach:
                         symtab_offset += lc_symtab.symoff
 
                     self.data.seek (symtab_offset)
-                    is_64 = self.is_64_bit()
+                    # TODO: Why are we checking is_64_bit() here?
+                    # is_64 = self.is_64_bit()
                     for i in range(lc_symtab.nsyms):
                         nlist = Mach.NList()
                         nlist.unpack (self, self.data, lc_symtab)
@@ -1238,13 +1238,13 @@ class Mach:
                 dict_utils.Enum.__init__(self, initial_value, self.enum)
 
 
-        def __init__(self, c=None, l=0,o=0):
+        def __init__(self, c=None, length=0, file_offset=0):
             if c != None:
                 self.command = c
             else:
                 self.command = Mach.LoadCommand.Command(0)
-            self.length = l
-            self.file_off = o
+            self.length = length
+            self.file_off = file_offset
 
         def get_item_dictionary(self):
             return { '#0' : str(self.command),
@@ -1432,7 +1432,8 @@ class Mach:
             self.compatibility_version = 0
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             name_offset, self.timestamp, self.current_version, self.compatibility_version = data.get_n_uint32(4)
             data.seek(self.file_off + name_offset, 0)
             self.name = data.get_fixed_length_c_string(self.length - 24)
@@ -1526,7 +1527,9 @@ class Mach:
             self.export_size = 0
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             self.rebase_off, self.rebase_size, self.bind_off, self.bind_size, self.weak_bind_off, self.weak_bind_size, self.lazy_bind_off, self.lazy_bind_size, self.export_off, self.export_size = data.get_n_uint32(10)
 
         def __str__(self):
@@ -1561,7 +1564,8 @@ class Mach:
             self.nlocrel        = 0
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             self.ilocalsym, self.nlocalsym, self.iextdefsym, self.nextdefsym, self.iundefsym, self.nundefsym, self.tocoff, self.ntoc, self.modtaboff, self.nmodtab, self.extrefsymoff, self.nextrefsyms, self.indirectsymoff, self.nindirectsyms, self.extreloff, self.nextrel, self.locreloff, self.nlocrel = data.get_n_uint32(18)
 
         def get_child_item_dictionaries(self):
@@ -1630,7 +1634,8 @@ class Mach:
             return item_dicts
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             self.symoff, self.nsyms, self.stroff, self.strsize = data.get_n_uint32(4)
 
         def __str__(self):
@@ -1677,7 +1682,8 @@ class Mach:
             return item_dicts
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             self.dataoff, self.datasize = data.get_n_uint32(2)
             if self.datasize > 0:
                 data.seek(self.dataoff, 0)
@@ -1700,7 +1706,8 @@ class Mach:
             self.cryptid = 0
 
         def unpack(self, mach_file, data):
-            byte_order_char = mach_file.magic.get_byte_order()
+            # TODO: Should be be checking byte order?
+            # byte_order_char = mach_file.magic.get_byte_order()
             self.cryptoff, self.cryptsize, self.cryptid = data.get_n_uint32(3)
 
         def __str__(self):
@@ -1742,21 +1749,21 @@ class Mach:
                 if self.section_delegate is None:
                     self.section_delegate = SectionListTreeItemDelegate(self.sections, False)
                 item_dicts.append(self.section_delegate.get_item_dictionary())
-            item_dicts.append({ '#0' : 'segname'    ,    'value': self.segname })
+            item_dicts.append({ '#0' : 'segname'    , 'value': self.segname })
             if is_64:
-                item_dicts.append({ '#0' : 'vmaddr'     ,  'value': int_to_hex64(self.vmaddr) })
-                item_dicts.append({ '#0' : 'vmsize'     ,  'value': int_to_hex64(self.vmsize), 'summary' : str(self.vmsize)})
-                item_dicts.append({ '#0' : 'fileoff'    ,  'value': int_to_hex64(self.fileoff) })
-                item_dicts.append({ '#0' : 'filesize'   ,  'value': int_to_hex64(self.filesize), 'summary' : str(self.filesize) })
+                item_dicts.append({ '#0' : 'vmaddr'     , 'value': int_to_hex64(self.vmaddr) })
+                item_dicts.append({ '#0' : 'vmsize'     , 'value': int_to_hex64(self.vmsize), 'summary' : str(self.vmsize)})
+                item_dicts.append({ '#0' : 'fileoff'    , 'value': int_to_hex64(self.fileoff) })
+                item_dicts.append({ '#0' : 'filesize'   , 'value': int_to_hex64(self.filesize), 'summary' : str(self.filesize) })
             else:
-                item_dicts.append({ '#0' : 'vmaddr'     ,  'value': int_to_hex32(self.vmaddr) })
-                item_dicts.append({ '#0' : 'vmsize'     ,  'value': int_to_hex32(self.vmsize), 'summary' : str(self.vmsize)})
-                item_dicts.append({ '#0' : 'fileoff'    ,  'value': int_to_hex32(self.fileoff)})
-                item_dicts.append({ '#0' : 'filesize'   ,  'value': int_to_hex32(self.filesize), 'summary' : str(self.filesize)})
-            item_dicts.append({ '#0' : 'maxprot'    ,  'value': int_to_hex32(self.maxprot), 'summary' : "%s" % (vm_prot_names[self.maxprot]) })
-            item_dicts.append({ '#0' : 'initprot'   ,  'value':  int_to_hex32(self.initprot), 'summary' : "%s" % (vm_prot_names[self.initprot]) })
-            item_dicts.append({ '#0' : 'nsects'     ,  'value': int_to_hex32(self.nsects), 'summary' : str(self.nsects) })
-            item_dicts.append({ '#0' : 'flags'      ,  'value': int_to_hex32(self.flags), 'summary' : self.get_flags_as_string() })
+                item_dicts.append({ '#0' : 'vmaddr'     , 'value': int_to_hex32(self.vmaddr) })
+                item_dicts.append({ '#0' : 'vmsize'     , 'value': int_to_hex32(self.vmsize), 'summary' : str(self.vmsize)})
+                item_dicts.append({ '#0' : 'fileoff'    , 'value': int_to_hex32(self.fileoff)})
+                item_dicts.append({ '#0' : 'filesize'   , 'value': int_to_hex32(self.filesize), 'summary' : str(self.filesize)})
+            item_dicts.append({ '#0' : 'maxprot'    , 'value': int_to_hex32(self.maxprot), 'summary' : "%s" % (vm_prot_names[self.maxprot]) })
+            item_dicts.append({ '#0' : 'initprot'   , 'value': int_to_hex32(self.initprot), 'summary' : "%s" % (vm_prot_names[self.initprot]) })
+            item_dicts.append({ '#0' : 'nsects'     , 'value': int_to_hex32(self.nsects), 'summary' : str(self.nsects) })
+            item_dicts.append({ '#0' : 'flags'      , 'value': int_to_hex32(self.flags), 'summary' : self.get_flags_as_string() })
             return item_dicts
 
         def unpack(self, mach_file, data):
@@ -1986,7 +1993,8 @@ class Mach:
             return self.type.sect_idx_is_section_index()
 
         def get_item_dictionary(self):
-            name = "Load Commands"
+            # TODO: why are we setting name, but not using it?
+            # name = "Load Commands"
             item_dict = { '#0' : str(self.index),
                           'name_offset': int_to_hex32(self.name_offset),
                           'type': self.type.get_type_as_string(),
@@ -2066,15 +2074,16 @@ class Mach:
         def do_section(self, line):
             '''A command that dumps sections contents'''
             args = shlex.split(line)
-            old_names = self.options.section_names
+            # TODO: why are we assigning old_names but not using it?
+            # old_names = self.options.section_names
             self.options.section_names = args
             self.mach.dump_section_contents(self.options)
 
 
-import Tkinter
+import Tkinter  # noqa: E402
 # from Tkinter import *
 
-from Tkinter import (
+from Tkinter import (  # noqa: E402
     Text,
     NONE,
     VERTICAL,
@@ -2091,7 +2100,7 @@ from Tkinter import (
     Tk
 )
 
-from ttk import (
+from ttk import (  # noqa: E402
     Frame,
     Scrollbar,
     Treeview,
@@ -2405,7 +2414,7 @@ class StringTableTreeItemDelegate(object):
             length = data.get_size()
             data.seek(0)
             while data.tell() < length:
-                item_dicts.append({ '#0' : '0x%8.8x' % (data.tell()), 'string' :  '"%s"' % (data.get_c_string()) })
+                item_dicts.append({ '#0' : '0x%8.8x' % (data.tell()), 'string' : '"%s"' % (data.get_c_string()) })
         return item_dicts
 
 class MachFrame(Frame):
@@ -2519,9 +2528,11 @@ class MachFrame(Frame):
                                { 'id' : 'value' , 'text' : 'Value'     , 'width' : 140 , 'anchor' : W , 'stretch' : 0 , 'sort_type' : 'number'},
                                { 'id' : 'name'  , 'text' : 'Name'      , 'width' : 80  , 'anchor' : W , 'stretch' : 1 }]
 
-        debug_info_column_dicts = [{ 'id' : '#0'   , 'text' : 'Offset', 'anchor' : W , 'stretch' : 0 },
-                              { 'id' : 'name' , 'text' : 'Name'  , 'anchor' : W , 'stretch' : 0 },
-                              { 'id' : 'value', 'text' : 'Value' , 'anchor' : W , 'stretch' : 1 }]
+        debug_info_column_dicts = [
+            { 'id' : '#0'   , 'text' : 'Offset', 'anchor' : W , 'stretch' : 0 },
+            { 'id' : 'name' , 'text' : 'Name'  , 'anchor' : W , 'stretch' : 0 },
+            { 'id' : 'value', 'text' : 'Value' , 'anchor' : W , 'stretch' : 1 }
+        ]
 
         debug_line_column_dicts = [ { 'id' : '#0' , 'text' : 'Address', 'width' : 200, 'anchor' : W , 'stretch' : 0 },
                                     { 'id' : 'file' , 'text' : 'File'  , 'width' : 400, 'anchor' : W , 'stretch' : 0 },
@@ -2556,7 +2567,9 @@ class MachFrame(Frame):
 def tk_gui(options, mach_files):
     root = Tk()
     root.geometry("800x600+300+300")
-    app = MachFrame(root, options, mach_files)
+    # TODO: why are we assigning "app" but not using it?
+    # app = MachFrame(root, options, mach_files)
+    MachFrame(root, options, mach_files)
     root.mainloop()
 
 def handle_mach(options, path):
@@ -2597,6 +2610,7 @@ def user_specified_options(options):
         return True
     return False
 
+
 if __name__ == '__main__':
     parser = optparse.OptionParser(description='A script that parses skinny and universal mach-o files.')
     parser.add_option('--arch', '-a', type='string', metavar='arch', dest='archs', action='append', help='specify one or more architectures by name')
@@ -2632,7 +2646,7 @@ if __name__ == '__main__':
         for path in mach_files:
             if os.path.isdir(path):
                 uuid_output = commands.getoutput('xcrun dwarfdump --uuid "%s"' % (path))
-                uuid_output_regex = re.compile("UUID: [-0-9A-Fa-f]+ \([^\)]+\) (.*)")
+                uuid_output_regex = re.compile(r"UUID: [-0-9A-Fa-f]+ \([^\)]+\) (.*)")
                 lines = uuid_output.split('\n')
                 for line in lines:
                     match = uuid_output_regex.match(line)
