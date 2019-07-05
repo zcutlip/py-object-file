@@ -6,7 +6,7 @@ with open("pyobjfile/__about__.py") as fp:
 setup(name=about["__title__"],
       version=about["__version__"],
       description=about["__summary__"],
-      url="https://github.com/zcutlip/py-dwarf-parser",
+      url="https://github.com/zcutlip/py-object-file",
       packages=find_packages(),
       python_requires='>=2.7',
       install_requires=[]
