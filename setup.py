@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 about = {}
-with open("grumpy/__about__.py") as fp:
+with open("pyobjfile/__about__.py") as fp:
     exec(fp.read(), about)
 
 setup(name=about["__title__"],
