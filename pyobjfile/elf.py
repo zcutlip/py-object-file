@@ -1,4 +1,6 @@
 #!/usr/bin/python
+from __future__ import absolute_import
+from __future__ import print_function
 import json
 import optparse
 import StringIO
@@ -7,6 +9,7 @@ import sys
 # Local imports
 from .util import dict_utils
 from .util import file_extract
+from six.moves import range
 
 
 # e_ident size and indices.
@@ -1034,48 +1037,48 @@ class Header(object):
             self.clear()
 
     def dump(self, f=sys.stdout):
-        print >>f, 'ELF Header:'
+        print('ELF Header:', file=f)
         for i in range(EI_PAD):
             if i == EI_OSABI:
-                print >>f, 'e_ident[%-13s] = 0x%2.2x %s' % (
+                print('e_ident[%-13s] = 0x%2.2x %s' % (
                         str(Identification(i)), self.e_ident[i],
-                        str(ElfOSABI(self.e_ident[i])))
+                        str(ElfOSABI(self.e_ident[i]))), file=f)
             elif i == EI_MAG1 or i == EI_MAG2 or i == EI_MAG3:
-                print >>f, "e_ident[%-13s] = 0x%2.2x '%c'" % (
+                print("e_ident[%-13s] = 0x%2.2x '%c'" % (
                         str(Identification(i)), self.e_ident[i],
-                        self.e_ident[i])
+                        self.e_ident[i]), file=f)
             elif i == EI_CLASS:
-                print >>f, 'e_ident[%-13s] = 0x%2.2x %s' % (
+                print('e_ident[%-13s] = 0x%2.2x %s' % (
                         str(Identification(i)), self.e_ident[i],
-                        str(ElfClass(self.e_ident[i])))
+                        str(ElfClass(self.e_ident[i]))), file=f)
             elif i == EI_DATA:
-                print >>f, 'e_ident[%-13s] = 0x%2.2x %s' % (
+                print('e_ident[%-13s] = 0x%2.2x %s' % (
                         str(Identification(i)), self.e_ident[i],
-                        str(ElfData(self.e_ident[i])))
+                        str(ElfData(self.e_ident[i]))), file=f)
             else:
-                print >>f, 'e_ident[%-13s] = 0x%2.2x' % (
-                        str(Identification(i)), self.e_ident[i])
-        print >>f, 'e_type      = 0x%4.4x %s' % (self.e_type,
-                                                 str(FileType(self.e_type)))
-        print >>f, 'e_machine   = 0x%4.4x %s' % (self.e_machine,
-                                                 str(Machine(self.e_machine)))
-        print >>f, 'e_version   = 0x%8.8x' % (self.e_version)
+                print('e_ident[%-13s] = 0x%2.2x' % (
+                        str(Identification(i)), self.e_ident[i]), file=f)
+        print('e_type      = 0x%4.4x %s' % (self.e_type,
+                                                 str(FileType(self.e_type))), file=f)
+        print('e_machine   = 0x%4.4x %s' % (self.e_machine,
+                                                 str(Machine(self.e_machine))), file=f)
+        print('e_version   = 0x%8.8x' % (self.e_version), file=f)
         addr_size = self.get_address_byte_size()
         if addr_size == 4:
-            print >>f, 'e_entry     = 0x%8.8x' % (self.e_entry)
-            print >>f, 'e_phoff     = 0x%8.8x' % (self.e_phoff)
-            print >>f, 'e_shoff     = 0x%8.8x' % (self.e_shoff)
+            print('e_entry     = 0x%8.8x' % (self.e_entry), file=f)
+            print('e_phoff     = 0x%8.8x' % (self.e_phoff), file=f)
+            print('e_shoff     = 0x%8.8x' % (self.e_shoff), file=f)
         elif addr_size == 8:
-            print >>f, 'e_entry     = 0x%16.16x' % (self.e_entry)
-            print >>f, 'e_phoff     = 0x%16.16x' % (self.e_phoff)
-            print >>f, 'e_shoff     = 0x%16.16x' % (self.e_shoff)
-        print >>f, 'e_flags     = 0x%8.8x' % (self.e_flags)
-        print >>f, 'e_ehsize    = 0x%4.4x' % (self.e_ehsize)
-        print >>f, 'e_phentsize = 0x%4.4x' % (self.e_phentsize)
-        print >>f, 'e_phnum     = 0x%4.4x' % (self.e_phnum)
-        print >>f, 'e_shentsize = 0x%4.4x' % (self.e_shentsize)
-        print >>f, 'e_shnum     = 0x%4.4x' % (self.e_shnum)
-        print >>f, 'e_shstrndx  = 0x%4.4x' % (self.e_shstrndx)
+            print('e_entry     = 0x%16.16x' % (self.e_entry), file=f)
+            print('e_phoff     = 0x%16.16x' % (self.e_phoff), file=f)
+            print('e_shoff     = 0x%16.16x' % (self.e_shoff), file=f)
+        print('e_flags     = 0x%8.8x' % (self.e_flags), file=f)
+        print('e_ehsize    = 0x%4.4x' % (self.e_ehsize), file=f)
+        print('e_phentsize = 0x%4.4x' % (self.e_phentsize), file=f)
+        print('e_phnum     = 0x%4.4x' % (self.e_phnum), file=f)
+        print('e_shentsize = 0x%4.4x' % (self.e_shentsize), file=f)
+        print('e_shnum     = 0x%4.4x' % (self.e_shnum), file=f)
+        print('e_shstrndx  = 0x%4.4x' % (self.e_shstrndx), file=f)
 
     def is_valid(self):
         e = self.e_ident
@@ -1183,7 +1186,7 @@ class SectionHeader(object):
         if flat:
             addr_size = self.elf.get_address_byte_size()
             if self.index == 0:
-                print >>f, 'Section Headers:'
+                print('Section Headers:', file=f)
                 if addr_size == 4:
                     f.write(('Index   sh_name    sh_type           sh_flags   '
                              'sh_addr    sh_offset  sh_size    sh_link    '
@@ -1223,34 +1226,34 @@ class SectionHeader(object):
                                                   self.sh_entsize))
             f.write(self.name)
         else:
-            print >>f, 'Section[%u]:' % (self.index)
+            print('Section[%u]:' % (self.index), file=f)
             if self.name:
-                print >>f, 'sh_name      = 0x%8.8x "%s"' % (self.sh_name,
-                                                            self.name)
+                print('sh_name      = 0x%8.8x "%s"' % (self.sh_name,
+                                                            self.name), file=f)
             else:
-                print >>f, 'sh_name      = 0x%8.8x' % (self.sh_name)
-            print >>f, 'sh_type      = 0x%8.8x %s' % (self.sh_type,
+                print('sh_name      = 0x%8.8x' % (self.sh_name), file=f)
+            print('sh_type      = 0x%8.8x %s' % (self.sh_type,
                                                       str(SectionType(
-                                                                self.sh_type)))
+                                                                self.sh_type))), file=f)
             addr_size = self.elf.get_address_byte_size()
             if addr_size == 4:
-                print >>f, 'sh_flags     = 0x%8.8x' % (self.sh_flags)
-                print >>f, 'sh_addr      = 0x%8.8x' % (self.sh_addr)
-                print >>f, 'sh_offset    = 0x%8.8x' % (self.sh_offset)
-                print >>f, 'sh_size      = 0x%8.8x' % (self.sh_size)
+                print('sh_flags     = 0x%8.8x' % (self.sh_flags), file=f)
+                print('sh_addr      = 0x%8.8x' % (self.sh_addr), file=f)
+                print('sh_offset    = 0x%8.8x' % (self.sh_offset), file=f)
+                print('sh_size      = 0x%8.8x' % (self.sh_size), file=f)
             elif addr_size == 8:
-                print >>f, 'sh_flags     = 0x%16.16x' % (self.sh_flags)
-                print >>f, 'sh_addr      = 0x%16.16x' % (self.sh_addr)
-                print >>f, 'sh_offset    = 0x%16.16x' % (self.sh_offset)
-                print >>f, 'sh_size      = 0x%16.16x' % (self.sh_size)
-            print >>f, 'sh_link      = 0x%8.8x' % (self.sh_link)
-            print >>f, 'sh_info      = 0x%8.8x' % (self.sh_info)
+                print('sh_flags     = 0x%16.16x' % (self.sh_flags), file=f)
+                print('sh_addr      = 0x%16.16x' % (self.sh_addr), file=f)
+                print('sh_offset    = 0x%16.16x' % (self.sh_offset), file=f)
+                print('sh_size      = 0x%16.16x' % (self.sh_size), file=f)
+            print('sh_link      = 0x%8.8x' % (self.sh_link), file=f)
+            print('sh_info      = 0x%8.8x' % (self.sh_info), file=f)
             if addr_size == 4:
-                print >>f, 'sh_addralign = 0x%8.8x' % (self.sh_size)
-                print >>f, 'sh_entsize   = 0x%8.8x' % (self.sh_entsize)
+                print('sh_addralign = 0x%8.8x' % (self.sh_size), file=f)
+                print('sh_entsize   = 0x%8.8x' % (self.sh_entsize), file=f)
             elif addr_size == 8:
-                print >>f, 'sh_addralign = 0x%16.16x' % (self.sh_size)
-                print >>f, 'sh_entsize   = 0x%16.16x' % (self.sh_entsize)
+                print('sh_addralign = 0x%16.16x' % (self.sh_size), file=f)
+                print('sh_entsize   = 0x%16.16x' % (self.sh_entsize), file=f)
 
     def get_contents(self):
         '''Get the section contents as a python string'''
@@ -1357,17 +1360,17 @@ class ProgramHeader(object):
                             self.p_offset, self.p_vaddr, self.p_paddr,
                             self.p_filesz, self.p_memsz, self.p_align))
         else:
-            print >>f, 'Program Header[%u]:' % (self.index)
-            print >>f, 'p_type   = 0x%8.8x %s' % (self.p_type,
+            print('Program Header[%u]:' % (self.index), file=f)
+            print('p_type   = 0x%8.8x %s' % (self.p_type,
                                                   str(ProgramHeaderType(
-                                                        self.p_type)))
-            print >>f, 'p_flags  = 0x%8.8x' % (self.p_flags)
-            print >>f, 'p_offset = 0x%16.16x' % (self.p_offset)
-            print >>f, 'p_vaddr  = 0x%16.16x' % (self.p_vaddr)
-            print >>f, 'p_paddr  = 0x%16.16x' % (self.p_paddr)
-            print >>f, 'p_filesz = 0x%16.16x' % (self.p_filesz)
-            print >>f, 'p_memsz  = 0x%16.16x' % (self.p_memsz)
-            print >>f, 'p_align  = 0x%16.16x' % (self.p_align)
+                                                        self.p_type))), file=f)
+            print('p_flags  = 0x%8.8x' % (self.p_flags), file=f)
+            print('p_offset = 0x%16.16x' % (self.p_offset), file=f)
+            print('p_vaddr  = 0x%16.16x' % (self.p_vaddr), file=f)
+            print('p_paddr  = 0x%16.16x' % (self.p_paddr), file=f)
+            print('p_filesz = 0x%16.16x' % (self.p_filesz), file=f)
+            print('p_memsz  = 0x%16.16x' % (self.p_memsz), file=f)
+            print('p_align  = 0x%16.16x' % (self.p_align), file=f)
 
 
 class Symbol(object):
@@ -1422,7 +1425,7 @@ class Symbol(object):
 
     @classmethod
     def dump_header(cls, f=sys.stdout):
-        print >>f, 'Symbols:'
+        print('Symbols:', file=f)
         f.write(('Index   st_name    st_value           st_size            '
                  'st_info                             st_other st_shndx '
                  'Name\n'))
@@ -1453,20 +1456,20 @@ class Symbol(object):
                                 SymbolType(self.get_type()), self.st_other,
                                 self.st_shndx))
         else:
-            print >>f, 'Symbol[%u]:' % (self.index)
+            print('Symbol[%u]:' % (self.index), file=f)
             if self.name:
-                print >>f, 'st_name  = 0x%8.8x "%s"' % (self.st_name,
-                                                        self.name)
+                print('st_name  = 0x%8.8x "%s"' % (self.st_name,
+                                                        self.name), file=f)
             else:
-                print >>f, 'st_name  = 0x%8.8x' % (self.st_name)
-            print >>f, 'st_value = 0x%16.16x' % (self.st_value)
-            print >>f, 'st_size  = 0x%16.16x' % (self.st_size)
-            print >>f, 'st_info  = 0x%2.2x (%s %s)' % (
+                print('st_name  = 0x%8.8x' % (self.st_name), file=f)
+            print('st_value = 0x%16.16x' % (self.st_value), file=f)
+            print('st_size  = 0x%16.16x' % (self.st_size), file=f)
+            print('st_info  = 0x%2.2x (%s %s)' % (
                     self.st_info, SymbolBinding(self.get_binding()),
-                    SymbolType(self.get_type()))
-            print >>f, 'st_other = 0x%2.2x' % (self.st_other)
-            print >>f, 'st_shndx = 0x%4.4x (%u)' % (self.st_shndx,
-                                                    self.st_shndx)
+                    SymbolType(self.get_type())), file=f)
+            print('st_other = 0x%2.2x' % (self.st_other), file=f)
+            print('st_shndx = 0x%4.4x (%u)' % (self.st_shndx,
+                                                    self.st_shndx), file=f)
 
 
 class Note(object):
@@ -1483,12 +1486,12 @@ class Note(object):
                                              data.byte_order, data.addr_size)
 
     def dump(self, f=sys.stdout):
-        print >>f, 'name = "%s"' % (self.name)
+        print('name = "%s"' % (self.name), file=f)
         if self.name is 'CORE' or self.name is 'LINUX':
             note_enum = CoreNoteType(self.type)
-            print >>f, 'type = 0x%8.8x (%s)' % (self.type, note_enum)
+            print('type = 0x%8.8x (%s)' % (self.type, note_enum), file=f)
         else:
-            print >>f, 'type = 0x%8.8x (%u)' % (self.type, self.type)
+            print('type = 0x%8.8x (%u)' % (self.type, self.type), file=f)
         self.data.seek(0)
         if self.type == NT_FILE:
             # Format of NT_FILE note:
@@ -1502,35 +1505,35 @@ class Note(object):
             # followed by COUNT filenames in ASCII: "FILE1" NUL "FILE2" NUL...
             count = self.data.get_address()
             page_size = self.data.get_address()
-            print >>f, '    count     = 0x%16.16x (%u)' % (count, count)
-            print >>f, '    page_size = 0x%16.16x (%u)' % (page_size,
-                                                           page_size)
+            print('    count     = 0x%16.16x (%u)' % (count, count), file=f)
+            print('    page_size = 0x%16.16x (%u)' % (page_size,
+                                                           page_size), file=f)
             elements = list()
             for i in range(count):
                 start = self.data.get_address()
                 end = self.data.get_address()
                 file_ofs = self.data.get_address()
                 elements.append([start, end, file_ofs])
-            print >>f, ('    Index start              end                '
-                        'file_ofs           path')
-            print >>f, ('    ===== ------------------ ------------------ '
+            print('    Index start              end                '
+                        'file_ofs           path', file=f)
+            print('    ===== ------------------ ------------------ '
                         '------------------ '
-                        '-------------------------------------')
+                        '-------------------------------------', file=f)
             for i in range(count):
                 path = self.data.get_c_string()
-                print >>f, '    [%3u] 0x%16.16x 0x%16.16x 0x%16.16x %s' % (
+                print('    [%3u] 0x%16.16x 0x%16.16x 0x%16.16x %s' % (
                         i, elements[i][0], elements[i][1], elements[i][2],
-                        path)
-            print >>f, ''
+                        path), file=f)
+            print('', file=f)
         elif self.type == NT_AUXV:
             while True:
                 auxv_entry_type = self.data.get_address(-1)
                 if auxv_entry_type == -1:
                     break
                 auxv_entry_value = self.data.get_address(0)
-                print >>f, '    %-*s = %#x' % (AuxvType.max_width(),
+                print('    %-*s = %#x' % (AuxvType.max_width(),
                                                AuxvType(auxv_entry_type),
-                                               auxv_entry_value)
+                                               auxv_entry_value), file=f)
         else:
             file_extract.dump_memory(0, self.desc, options.num_per_line, f)
 
@@ -1556,7 +1559,7 @@ class ELFDynamic(object):
     def dump(self, elf, f=sys.stdout):
         s = "[%3u] %-*s %#8.8x" % (self.index, DynamicTags.max_width(),
                                    self.d_tag, self.d_val)
-        print >>f, s,
+        print(s, end=' ', file=f)
         str = None
         bits = None
         val = self.d_tag.get_enum_value()
@@ -1570,14 +1573,14 @@ class ELFDynamic(object):
             bits = DW_FLAGS_1_BITS
 
         if str is not None:
-            print >>f, '"%s"' % (str)
+            print('"%s"' % (str), file=f)
         elif bits is not None:
             for (name, bit) in bits:
                 if self.d_val & bit:
                     f.write(' %s' % (name))
-            print >>f
+            print(file=f)
         else:
-            print >>f
+            print(file=f)
 
 
 class StringTable(object):
@@ -1594,10 +1597,10 @@ class StringTable(object):
 
 def elf_hash(s):
     """A python implementation of elf_hash(3)."""
-    h = 0L
+    h = 0
     for c in s:
         h = (h << 4) + ord(c)
-        t = (h & 0xF0000000L)
+        t = (h & 0xF0000000)
         if t != 0:
             h = h ^ (t >> 24)
         h = h & ~t
@@ -1807,9 +1810,9 @@ class File(object):
                 sect_type = sect_info['sh_type']
             if 'align' in sect_info:
                 align = sect_info['align']
-                print 'data_offset before align %u: 0x%8.8x' % (align, data_offset)
+                print('data_offset before align %u: 0x%8.8x' % (align, data_offset))
                 data_offset = file_extract.align_to(data_offset, align)
-                print 'data_offset after  align %u: 0x%8.8x' % (align, data_offset)
+                print('data_offset after  align %u: 0x%8.8x' % (align, data_offset))
             sect_bytes_len = len(sect_bytes)
             SectionHeader.encode(data=data,
                                  shstrtab=shstrtab,
@@ -2023,26 +2026,26 @@ class File(object):
         return None
 
     def lookup_address(self, addr, f=sys.stdout):
-        print >>f,  'Looking up 0x%x in "%s":' % (addr, self.path)
+        print('Looking up 0x%x in "%s":' % (addr, self.path), file=f)
         section = self.get_section_containing_address(addr)
         if section:
             section.dump(flat=False, f=f)
-            print
+            print()
         symbol = self.get_symbol_containing_address(addr)
         if symbol:
             symbol.dump(flat=False, f=f)
-            print
+            print()
 
     def dump_section_headers_with_type(self, section_type, f=sys.stdout):
         section_type_enum = SectionType(section_type)
-        print >>f, 'Dumping section with type %s:' % (section_type_enum)
+        print('Dumping section with type %s:' % (section_type_enum), file=f)
         sh_type = section_type_enum.get_enum_value()
         sections = self.get_section_headers()
         if sections:
             for section in sections:
                 if section.sh_type == sh_type:
                     section.dump(flat=False, f=f)
-                    print >>f, ''
+                    print('', file=f)
                     contents = section.get_contents()
                     if contents:
                         if section_type == SHT_NOTE:
@@ -2055,20 +2058,20 @@ class File(object):
                                                      contents,
                                                      options.num_per_line, f)
         else:
-            print >>f, 'error: no section with type %#x were found' % (
-                    section_type)
+            print('error: no section with type %#x were found' % (
+                    section_type), file=f)
 
     def dump_program_headers_with_type(self, type,
                                        f=sys.stdout):
         type_enum = ProgramHeaderType(type)
-        print >>f, 'Dumping section with type %s:' % (type_enum)
+        print('Dumping section with type %s:' % (type_enum), file=f)
         p_type = type_enum.get_enum_value()
         program_headers = self.get_program_headers()
         if program_headers:
             for ph in program_headers:
                 if ph.p_type == p_type:
                     ph.dump(flat=False, f=f)
-                    print >>f, ''
+                    print('', file=f)
                     contents = ph.get_contents()
                     if contents:
                         if p_type == PT_NOTE:
@@ -2080,27 +2083,27 @@ class File(object):
                             file_extract.dump_memory(ph.p_vaddr, contents,
                                                      options.num_per_line, f)
         else:
-            print >>f, 'error: no program headers with type %#x were found' % (
-                type)
+            print('error: no program headers with type %#x were found' % (
+                type), file=f)
 
     def dump(self, options, f=sys.stdout):
         if self.is_valid():
             if options.dump_header:
                 self.header.dump(f)
                 if options.dump_program_headers:
-                    print >>f, ''
+                    print('', file=f)
             if options.dump_program_headers:
                 program_headers = self.get_program_headers()
                 for program_header in program_headers:
                     program_header.dump(flat=True, f=f)
-                    print >>f, ''
-                print >>f, ''
+                    print('', file=f)
+                print('', file=f)
             if options.dump_section_headers:
                 sections = self.get_section_headers()
                 for section in sections:
                     section.dump(flat=True, f=f)
-                    print >>f, ''
-                print >>f, ''
+                    print('', file=f)
+                print('', file=f)
             if options.dump_symtab:
                 symbols = self.get_symtab()
                 if symbols:
@@ -2108,8 +2111,8 @@ class File(object):
                     Symbol.dump_header(f=f)
                     for (idx, symbol) in enumerate(symbols):
                         symbol.dump(flat=True, f=f)
-                        print >>f, ''
-                    print >>f, ''
+                        print('', file=f)
+                    print('', file=f)
                 else:
                     f.write("error: ELF file doesn't contain a SHT_SYMTAB "
                             "section\n")
@@ -2120,34 +2123,34 @@ class File(object):
                     Symbol.dump_header(f=f)
                     for (idx, symbol) in enumerate(symbols):
                         symbol.dump(flat=True, f=f)
-                        print >>f, ''
-                    print >>f, ''
+                        print('', file=f)
+                    print('', file=f)
                 else:
                     f.write("error: ELF file doesn't contain a SHT_DYNSYM "
                             "section\n")
             if options.section_names:
-                print >>f, ''
+                print('', file=f)
                 for section_name in options.section_names:
                     sections = self.get_sections_by_name(section_name)
                     if sections:
                         for section in sections:
                             contents = section.get_contents()
                             if contents:
-                                print >>f, 'Dumping "%s" section contents:' % (
-                                        section_name)
+                                print('Dumping "%s" section contents:' % (
+                                        section_name), file=f)
                                 file_extract.dump_memory(section.sh_addr,
                                                          contents,
                                                          options.num_per_line,
                                                          f)
                     else:
-                        print >>f, 'error: no sections named %s were found' % (
-                                section_name)
+                        print('error: no sections named %s were found' % (
+                                section_name), file=f)
             if options.section_types:
-                print >>f, ''
+                print('', file=f)
                 for section_type in options.section_types:
                     self.dump_section_headers_with_type(section_type)
             if options.dump_notes:
-                print >>f, ''
+                print('', file=f)
                 if len(self.get_section_headers()):
                     self.dump_section_headers_with_type(SHT_NOTE)
                 else:
@@ -2168,12 +2171,12 @@ class File(object):
                                 symbol.get_binding() == STB_GLOBAL):
                             if options.verbose:
                                 symbol.dump(flat=True, f=f)
-                                print >>f, ''
+                                print('', file=f)
                             else:
                                 symbol_name = symbol.name
                                 if symbol_name not in undefined_symbols:
                                     undefined_symbols[symbol_name] = symbol
-                    symbol_names = undefined_symbols.keys()
+                    symbol_names = list(undefined_symbols.keys())
                     if symbol_names:
                         symbol_names.sort()
                         for symbol_name in symbol_names:
@@ -2182,12 +2185,12 @@ class File(object):
                             if symbol.get_binding() == STB_WEAK:
                                 f.write(' (weak)')
                             f.write('\n')
-                        print >>f, ''
+                        print('', file=f)
                     else:
-                        print >>f, 'no undefined symbols'
+                        print('no undefined symbols', file=f)
             if options.api:
                 api_dict = self.get_api_info()
-                print json.dumps(api_dict, indent=2, ensure_ascii=False)
+                print(json.dumps(api_dict, indent=2, ensure_ascii=False))
             dwarf.handle_dwarf_options(options, self, f)
 
     def get_api_info(self):
@@ -2213,11 +2216,11 @@ class File(object):
                 if symbol.st_shndx > 0 and symbol.st_shndx < SHN_LORESERVE:
                     if symbol.name not in export_map:
                         export_map[symbol.name] = symbol
-            undef_names = undef_map.keys()
+            undef_names = list(undef_map.keys())
             if undef_names:
                 undef_names.sort()
             api_info['imports'] = undef_names
-            export_names = export_map.keys()
+            export_names = list(export_map.keys())
             if export_names:
                 export_names.sort()
             api_info['exports'] = export_names
@@ -2251,7 +2254,7 @@ def handle_elf(options, path):
                 print('ELF: %s' % (path))
             elf.dump(options=options)
     else:
-        print 'error: %s is not a valid ELF file' % (path)
+        print('error: %s is not a valid ELF file' % (path))
 
 
 def user_specified_options(options):
@@ -2397,7 +2400,7 @@ if __name__ == '__main__':
         options.dump_program_headers = True
         options.dump_section_headers = True
     if options.verbose:
-        print 'options', options
-        print 'files', files
+        print('options', options)
+        print('files', files)
     for path in files:
         handle_elf(options, path)
