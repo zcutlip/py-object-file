@@ -5,7 +5,7 @@ import json
 import optparse
 import StringIO
 import sys
-
+from pydwarf import dwarf
 # Local imports
 from .util import dict_utils
 from .util import file_extract
@@ -1487,7 +1487,7 @@ class Note(object):
 
     def dump(self, f=sys.stdout):
         print('name = "%s"' % (self.name), file=f)
-        if self.name is 'CORE' or self.name is 'LINUX':
+        if self.name == 'CORE' or self.name == 'LINUX':
             note_enum = CoreNoteType(self.type)
             print('type = 0x%8.8x (%s)' % (self.type, note_enum), file=f)
         else:
@@ -1775,7 +1775,7 @@ class File(object):
         data.put_uint16(eh.e_phentsize)
         data.put_uint16(0)  # e_phnum
         data.put_uint16(eh.e_shentsize)
-        data.put_uint16(num_section_headers) # e_shnum
+        data.put_uint16(num_section_headers)  # e_shnum
         data.put_uint16(1)  # e_shstrndx
 
         # Create the section header string table contents
@@ -1848,7 +1848,7 @@ class File(object):
         return self.hash
 
     def get_dwarf(self):
-        if self.dwarf is not -1:
+        if self.dwarf != -1:
             return self.dwarf
         self.dwarf = None
         debug_abbrev_data = self.get_section_contents_by_name('.debug_abbrev')
