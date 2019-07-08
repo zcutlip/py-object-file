@@ -1484,7 +1484,7 @@ class Note(object):
 
     def dump(self, f=sys.stdout):
         print >>f, 'name = "%s"' % (self.name)
-        if self.name is 'CORE' or self.name is 'LINUX':
+        if self.name == 'CORE' or self.name == 'LINUX':
             note_enum = CoreNoteType(self.type)
             print >>f, 'type = 0x%8.8x (%s)' % (self.type, note_enum)
         else:
@@ -1845,7 +1845,7 @@ class File(object):
         return self.hash
 
     def get_dwarf(self):
-        if self.dwarf is not -1:
+        if self.dwarf != -1:
             return self.dwarf
         self.dwarf = None
         debug_abbrev_data = self.get_section_contents_by_name('.debug_abbrev')
