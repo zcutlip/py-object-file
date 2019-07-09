@@ -2,9 +2,15 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+
+from builtins import chr
+from builtins import zip
+from builtins import str
+from builtins import range
+from builtins import object
 import binascii
 import cmd
-import commands
+import subprocess
 
 from pydwarf import dwarf
 
@@ -14,16 +20,17 @@ import re
 import shlex
 import struct
 import string
-import StringIO
+import io
 import sys
 import uuid
 
 from .util import dict_utils
 from .util import term_colors
 from .util import file_extract
-from six import unichr
-from six.moves import range
-from six.moves import zip
+import six
+
+from future import standard_library
+standard_library.install_aliases()
 
 # Mach header "magic" constants
 MH_MAGIC                    = 0xfeedface
@@ -366,10 +373,10 @@ def dump_hex_byte_string_diff(addr, a, b, bytes_per_line=16):
 
     print(line)
 
-class Mach:
+class Mach(object):
     """Class that does everything mach-o related"""
 
-    class Arch:
+    class Arch(object):
         """Class that implements mach-o architectures"""
 
         def __init__(self, c=0, s=0):
@@ -486,7 +493,7 @@ class Mach:
     def parse(self, path):
         self.path = path
         try:
-            f = open(self.path)
+            f = open(self.path,"rb")
             file_extractor = file_extract.FileExtract(f, '=')
             self.unpack(file_extractor)
             #f.close()
@@ -550,7 +557,7 @@ class Mach:
     def is_valid(self):
         return self.content != None
 
-    class Universal:
+    class Universal(object):
 
         def __init__(self, path):
             self.path       = path
@@ -662,7 +669,7 @@ class Mach:
             for i in range(self.nfat_arch):
                 self.archs[i].mach.dump_symbol_names_matching_regex(regex, file)
 
-        class ArchInfo:
+        class ArchInfo(object):
 
             def __init__(self):
                 self.arch   = Mach.Arch(0,0)
@@ -699,7 +706,7 @@ class Mach:
             def __repr__(self):
                 return "Mach.Universal.ArchInfo: %#8.8x %#8.8x %#8.8x %#8.8x %#8.8x" % (self.arch.cpu, self.arch.sub, self.offset, self.size, self.align)
 
-    class Flags:
+    class Flags(object):
 
         def __init__(self, b):
             self.bits = b
@@ -780,7 +787,7 @@ class Mach:
         def __init__(self, initial_value = 0):
             dict_utils.Enum.__init__(self, initial_value, self.enum)
 
-    class Skinny:
+    class Skinny(object):
 
         def __init__(self, path):
             self.path       = path
@@ -1016,15 +1023,15 @@ class Mach:
         def get_dwarf(self):
             if self.dwarf == -1:
                 self.dwarf = None
-                debug_abbrev_data = self.get_section_contents_by_name('__debug_abbrev')
-                debug_info_data = self.get_section_contents_by_name('__debug_info')
+                debug_abbrev_data = self.get_section_contents_by_name(b'__debug_abbrev')
+                debug_info_data = self.get_section_contents_by_name(b'__debug_info')
                 if debug_abbrev_data or debug_info_data:
-                    debug_aranges_data = self.get_section_contents_by_name('__debug_aranges')
-                    debug_line_data = self.get_section_contents_by_name('__debug_line')
-                    debug_ranges_data = self.get_section_contents_by_name('__debug_ranges')
-                    debug_str_data = self.get_section_contents_by_name('__debug_str')
-                    apple_names_data = self.get_section_contents_by_name('__apple_names')
-                    apple_types_data = self.get_section_contents_by_name('__apple_types')
+                    debug_aranges_data = self.get_section_contents_by_name(b'__debug_aranges')
+                    debug_line_data = self.get_section_contents_by_name(b'__debug_line')
+                    debug_ranges_data = self.get_section_contents_by_name(b'__debug_ranges')
+                    debug_str_data = self.get_section_contents_by_name(b'__debug_str')
+                    apple_names_data = self.get_section_contents_by_name(b'__apple_names')
+                    apple_types_data = self.get_section_contents_by_name(b'__apple_types')
                     self.dwarf = dwarf.DWARF(debug_abbrev_data, debug_aranges_data, debug_info_data, debug_line_data, debug_ranges_data, debug_str_data, apple_names_data, apple_types_data)
             return self.dwarf
 
@@ -1079,7 +1086,7 @@ class Mach:
             self.data.push_offset_and_seek(offset)
             bytes = self.data.read_size(size)
             self.data.pop_offset_and_seek()
-            return file_extract.FileExtract(StringIO.StringIO(bytes),
+            return file_extract.FileExtract(io.BytesIO(bytes),
                                             self.data.get_byte_order(),
                                             self.data.get_addr_size())
 
@@ -1147,7 +1154,7 @@ class Mach:
                 if lc_symtab:
                     symtab_offset = self.file_off
                     if self.data.is_in_memory():
-                        linkedit_segment = self.get_segment('__LINKEDIT')
+                        linkedit_segment = self.get_segment(b'__LINKEDIT')
                         if linkedit_segment:
                             linkedit_vmaddr = linkedit_segment.vmaddr
                             linkedit_fileoff = linkedit_segment.fileoff
@@ -1185,7 +1192,7 @@ class Mach:
         def is_64_bit(self):
             return self.magic.is_64_bit()
 
-    class LoadCommand:
+    class LoadCommand(object):
         class Command(dict_utils.Enum):
             enum = {
                 'LC_SEGMENT'                : LC_SEGMENT,
@@ -1267,7 +1274,7 @@ class Mach:
             lc_name = self.command.get_enum_name()
             return '%#8.8x: <%#4.4x> %-24s' % (self.file_off, self.length, lc_name)
 
-    class Section:
+    class Section(object):
 
         class Type(dict_utils.Enum):
             enum = {
@@ -1424,7 +1431,7 @@ class Mach:
 
         def get_contents_as_extractor(self, mach_file):
             bytes = self.get_contents(mach_file)
-            return file_extract.FileExtract(StringIO.StringIO(bytes),
+            return file_extract.FileExtract(io.BytesIO(bytes),
                                             mach_file.data.get_byte_order(),
                                             mach_file.data.get_addr_size())
 
@@ -1482,7 +1489,7 @@ class Mach:
             return s
 
     class UnixThreadLoadCommand(LoadCommand):
-        class ThreadState:
+        class ThreadState(object):
             def __init__(self):
                 self.flavor = 0
                 self.count = 0
@@ -1881,8 +1888,8 @@ class Mach:
             s += "entryoff = %#8.8x, stacksize = %u" % (self.entryoff, self.stacksize)
             return s
 
-    class NList:
-        class Type:
+    class NList(object):
+        class Type(object):
             class Stab(dict_utils.Enum):
                 enum = {
                     'N_GSYM'    : N_GSYM    ,
@@ -2179,9 +2186,9 @@ class DelegateTree(Frame):
         if matching_column_dict:
             new_heading_text = ' ' + column_dict['text']
             if self.sort_direction == 1:
-                new_heading_text += ' ' + unichr(0x25BC).encode('utf8')
+                new_heading_text += ' ' + chr(0x25BC).encode('utf8')
             elif self.sort_direction == 2:
-                new_heading_text += ' ' + unichr(0x25B2).encode('utf8')
+                new_heading_text += ' ' + chr(0x25B2).encode('utf8')
             self.tree.heading(column_id, text=new_heading_text)
             if 'sort_type' in matching_column_dict:
                 new_sort_type = matching_column_dict['sort_type']
@@ -2650,7 +2657,7 @@ if __name__ == '__main__':
             options.dump_load_commands = True
         for path in mach_files:
             if os.path.isdir(path):
-                uuid_output = commands.getoutput('xcrun dwarfdump --uuid "%s"' % (path))
+                uuid_output = subprocess.getoutput('xcrun dwarfdump --uuid "%s"' % (path))
                 uuid_output_regex = re.compile(r"UUID: [-0-9A-Fa-f]+ \([^\)]+\) (.*)")
                 lines = uuid_output.split('\n')
                 for line in lines:
