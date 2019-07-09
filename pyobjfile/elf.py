@@ -1722,7 +1722,7 @@ class File(object):
     '''Represents and ELF file'''
     def __init__(self, path):
         self.path = path
-        self.data = file_extract.FileExtract(open(self.path), '=', 4)
+        self.data = file_extract.FileExtract(open(self.path, "rb"), '=', 4)
         self.header = Header(self)
         if not self.header.is_valid():
             self.header = None
