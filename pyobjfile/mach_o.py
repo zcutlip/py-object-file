@@ -12,7 +12,10 @@ import binascii
 import cmd
 import subprocess
 
-from pydwarf import dwarf
+try:
+    from pydwarf import dwarf
+except ImportError:
+    dwarf = None
 
 import optparse
 import os
@@ -516,7 +519,7 @@ class Mach(object):
 
     def get_architecture_slice(self, arch_name):
         return self.content.get_architecture_slice(arch_name)
-
+    
     def get_architecture_slice_at_index(self, index):
         arch = self.get_architecture(index)
         _slice = None
@@ -1032,6 +1035,7 @@ class Mach(object):
         def get_dwarf(self):
             if self.dwarf == -1:
                 self.dwarf = None
+            if dwarf is not None:
                 debug_abbrev_data = self.get_section_contents_by_name(b'__debug_abbrev')
                 debug_info_data = self.get_section_contents_by_name(b'__debug_info')
                 if debug_abbrev_data or debug_info_data:
@@ -1061,8 +1065,8 @@ class Mach(object):
                     print("No symbols")
             if options.find_mangled:
                 self.dump_symbol_names_matching_regex (re.compile('^_?_Z'))
-
-            dwarf.handle_dwarf_options(options, self)
+            if dwarf is not None:
+                dwarf.handle_dwarf_options(options, self)
 
         def dump_header(self, dump_description = True, options = None):
             if dump_description:
