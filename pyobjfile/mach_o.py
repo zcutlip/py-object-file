@@ -481,10 +481,12 @@ class Mach(object):
         def is_64_bit(self):
             return self.value == MH_MAGIC_64 or self.value == MH_CIGAM_64
 
-    def __init__(self):
+    def __init__(self, path = None):
         self.magic = Mach.Magic()
         self.content = None
-        self.path = None
+        self.path = path
+        if path:
+            self.parse(self.path)
 
     def extract (self, path, extractor):
         self.path = path
