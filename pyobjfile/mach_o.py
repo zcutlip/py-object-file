@@ -517,6 +517,13 @@ class Mach(object):
     def get_architecture_slice(self, arch_name):
         return self.content.get_architecture_slice(arch_name)
 
+    def get_architecture_slice_at_index(self, index):
+        arch = self.get_architecture(index)
+        _slice = None
+        if arch:
+            _slice = self.get_architecture_slice(str(arch))
+        return _slice
+
     def compare(self, rhs):
         self.content.compare(rhs.content)
 
