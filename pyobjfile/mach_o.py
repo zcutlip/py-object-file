@@ -2058,7 +2058,8 @@ class Mach(object):
             name_display = ''
             if len(self.name):
                 name_display = ' "%s"' % self.name
-            return '%#8.8x %#2.2x (%-20s) %#2.2x %#4.4x %16.16x%s' % (self.name_offset, self.type.value, self.type, self.sect_idx, self.desc, self.value, name_display)
+            return '%#8.8x %#2.2x (%-20s) %#2.2x %#4.4x %16.16x%s' % (
+                self.name_offset, self.type.value, self.type, self.sect_idx, self.desc, self.value, name_display)
 
 
     class Interactive(cmd.Cmd):
