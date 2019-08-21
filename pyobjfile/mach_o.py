@@ -462,8 +462,10 @@ class Mach(object):
             'FAT_CIGAM'     : FAT_CIGAM
         }
 
-        def __init__(self, initial_value = 0):
+        def __init__(self, initial_value = 0, data=None):
             dict_utils.Enum.__init__(self, initial_value, self.enum)
+            if data:
+                self.unpack(data)
 
         def is_skinny_mach_file(self):
             return self.value == MH_MAGIC or self.value == MH_CIGAM or self.value == MH_MAGIC_64 or self.value == MH_CIGAM_64
@@ -485,7 +487,7 @@ class Mach(object):
             return self.value == MH_MAGIC_64 or self.value == MH_CIGAM_64
 
     def __init__(self, path = None):
-        self.magic = Mach.Magic()
+        self.magic = None
         self.content = None
         self.path = path
         if path:
@@ -555,29 +557,30 @@ class Mach(object):
         return self.content.description()
 
     def unpack(self, data):
-        self.magic.unpack(data)
+        if not self.magic:
+            self.magic = self.Magic(data=data)
+    
         if self.magic.is_skinny_mach_file():
-            self.content = Mach.Skinny(self.path)
+            self.content = self.Skinny(self.path, data=data, magic=self.magic)
         elif self.magic.is_universal_mach_file():
-            self.content = Mach.Universal(self.path)
+            self.content = Mach.Universal(self.path, data=data, magic=self.magic)
         else:
             self.content = None
-
-        if self.content != None:
-            self.content.unpack(data, self.magic)
 
     def is_valid(self):
         return self.content != None
 
     class Universal(object):
 
-        def __init__(self, path):
+        def __init__(self, path, data=None, magic=None):
             self.path       = path
             self.type       = 'universal'
             self.file_off   = 0
             self.magic      = None
             self.nfat_arch  = 0
             self.archs      = list()
+            if data:
+                self.unpack(data, magic=magic)
 
         def get_num_archs(self):
             return len(self.archs)
@@ -607,8 +610,7 @@ class Mach(object):
         def unpack(self, data, magic = None):
             self.file_off = data.tell()
             if magic is None:
-                self.magic = Mach.Magic()
-                self.magic.unpack(data)
+                self.magic = Mach.Magic(data)
             else:
                 self.magic = magic
                 self.file_off = self.file_off - 4
@@ -616,14 +618,13 @@ class Mach(object):
             data.set_byte_order('big')
             self.nfat_arch = data.get_uint32()
             for i in range(self.nfat_arch):
-                self.archs.append(Mach.Universal.ArchInfo())
+                arch = Mach.Universal.ArchInfo()
+                self.archs.append(arch)
                 self.archs[i].unpack(data)
             for i in range(self.nfat_arch):
-                self.archs[i].mach = Mach.Skinny(self.path)
-                data.seek (self.archs[i].offset, 0)
-                skinny_magic = Mach.Magic()
-                skinny_magic.unpack (data)
-                self.archs[i].mach.unpack(data, skinny_magic)
+                data.seek(self.archs[i].offset, 0)
+                skinny_magic = Mach.Magic(data = data)
+                self.archs[i].mach = Mach.Skinny(self.path,data=data, magic=skinny_magic)
 
         def compare(self, rhs):
             print('error: comparing two universal files is not supported yet')
@@ -683,12 +684,14 @@ class Mach(object):
 
         class ArchInfo(object):
 
-            def __init__(self):
+            def __init__(self, data=None):
                 self.arch   = Mach.Arch(0,0)
                 self.offset = 0
                 self.size   = 0
                 self.align  = 0
                 self.mach   = None
+                if data:
+                    self.unpack(data)
 
             def unpack(self, data):
                 # Universal headers are always in big endian
@@ -801,7 +804,7 @@ class Mach(object):
 
     class Skinny(object):
 
-        def __init__(self, path):
+        def __init__(self, path, data=None, magic=None):
             self.path       = path
             self.type       = 'skinny'
             self.data       = None
@@ -819,6 +822,8 @@ class Mach(object):
             self.symbols    = list()
             self.sections.append(Mach.Section())
             self.dwarf      = -1
+            if data:
+                self.unpack(data, magic=magic)
 
         def get_file_type(self):
             return 'mach-o'
@@ -869,8 +874,7 @@ class Mach(object):
             self.data = data
             self.file_off = data.tell()
             if magic is None:
-                self.magic = Mach.Magic()
-                self.magic.unpack(data)
+                self.magic = Mach.Magic(data)
             else:
                 self.magic = magic
                 self.file_off = self.file_off - 4
