@@ -474,6 +474,7 @@ class Mach(object):
             return self.value == FAT_MAGIC or self.value == FAT_CIGAM
 
         def unpack(self, data):
+            self.file_off = data.tell()
             data.set_byte_order('native')
             self.value = data.get_uint32()
 
@@ -694,6 +695,7 @@ class Mach(object):
                     self.unpack(data)
 
             def unpack(self, data):
+                self.file_off = data.tell()
                 # Universal headers are always in big endian
                 data.set_byte_order('big')
                 self.arch.cpu, self.arch.sub, self.offset, self.size, self.align = data.get_n_uint32(5)
@@ -1513,6 +1515,7 @@ class Mach(object):
                 self.register_values = list()
 
             def unpack(self, data):
+                self.file_off = data.tell()
                 self.flavor, self.count = data.get_n_uint32(2)
                 self.register_values = data.get_n_uint32(self.count)
 
@@ -2037,6 +2040,7 @@ class Mach(object):
             return item_dict
 
         def unpack(self, mach_file, data, symtab_lc):
+            self.file_off = data.tell()
             self.index = len(mach_file.symbols)
             self.name_offset = data.get_uint32()
             self.type.value, self.sect_idx = data.get_n_uint8(2)
