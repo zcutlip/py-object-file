@@ -1,5 +1,9 @@
 __title__ = "py-object-file"
+<<<<<<< HEAD
 __version__ = "0.1.1b3"
+=======
+__version__ = "0.2.0.dev0"
+>>>>>>> py3-modernize
 __summary__ = "A package to parse exutable and library object files, such as ELF and Mach-O."
 
 """
