@@ -9,5 +9,5 @@ setup(name=about["__title__"],
       url="https://github.com/zcutlip/py-object-file",
       packages=find_packages(),
       python_requires='>=2.7',
-      install_requires=["py-dwarf", "future"]
+      install_requires=["py-dwarf>=0.2.0.dev0", "future"]
       )
