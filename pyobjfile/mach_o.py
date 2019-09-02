@@ -1211,6 +1211,16 @@ class Mach(object):
         def is_64_bit(self):
             return self.magic.is_64_bit()
 
+        def get_symbols_by_name(self, symname):
+            matches = []
+            symbols = self.get_symtab()
+            for sym in symbols:
+                if sym.name == symname:
+                    matches.append(sym)
+            return matches
+
+
+
     class LoadCommand(object):
         class Command(dict_utils.Enum):
             enum = {
