@@ -494,6 +494,12 @@ class Mach(object):
         if path:
             self.parse(self.path)
 
+    def __getattr__(self, attr):
+        thing = getattr(self.content, attr)
+        if thing is None:
+            raise AttributeError
+        return thing
+
     def extract (self, path, extractor):
         self.path = path
         self.unpack(extractor)
@@ -560,7 +566,7 @@ class Mach(object):
     def unpack(self, data):
         if not self.magic:
             self.magic = self.Magic(data=data)
-    
+
         if self.magic.is_skinny_mach_file():
             self.content = self.Skinny(self.path, data=data, magic=self.magic)
         elif self.magic.is_universal_mach_file():
@@ -1210,7 +1216,7 @@ class Mach(object):
 
         def is_64_bit(self):
             return self.magic.is_64_bit()
-
+        
         def get_symbols_by_name(self, symname):
             matches = []
             symbols = self.get_symtab()
