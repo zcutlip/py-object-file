@@ -4,7 +4,10 @@ import json
 import optparse
 from io import StringIO
 import sys
-from pydwarf import dwarf
+try:
+    from pydwarf import dwarf
+except ImportError:
+    dwarf = None
 # Local imports
 from .util import dict_utils
 from .util import file_extract
@@ -1863,15 +1866,16 @@ class File(object):
                     '.debug_types')
             apple_names_data = None
             apple_types_data = None
-            self.dwarf = dwarf.DWARF(debug_abbrev_data,
-                                     debug_aranges_data,
-                                     debug_info_data,
-                                     debug_line_data,
-                                     debug_ranges_data,
-                                     debug_str_data,
-                                     apple_names_data,
-                                     apple_types_data,
-                                     debug_types_data)
+            if dwarf is not None:
+                self.dwarf = dwarf.DWARF(debug_abbrev_data,
+                                        debug_aranges_data,
+                                        debug_info_data,
+                                        debug_line_data,
+                                        debug_ranges_data,
+                                        debug_str_data,
+                                        apple_names_data,
+                                        apple_types_data,
+                                        debug_types_data)
         return self.dwarf
 
     def get_sections_by_name(self, section_name):
