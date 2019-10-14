@@ -1,15 +1,14 @@
 #!/usr/bin/python
-from __future__ import absolute_import
-from __future__ import print_function
+
 import json
 import optparse
-import StringIO
+from io import StringIO
 import sys
 from pydwarf import dwarf
 # Local imports
 from .util import dict_utils
 from .util import file_extract
-from six.moves import range
+
 
 
 # e_ident size and indices.
