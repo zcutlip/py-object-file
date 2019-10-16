@@ -5,8 +5,13 @@ import subprocess
 
 try:
     from pydwarf import dwarf
-except ImportError:
-    dwarf = None
+except ModuleNotFoundError as mnfe:
+    if mnfe.name == "pydwarf":
+        import sys
+        print("pydwarf not found. DWARF support disabled.", file=sys.stderr)
+        dwarf = None
+    else:
+        raise
 
 import optparse
 import os
