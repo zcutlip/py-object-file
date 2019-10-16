@@ -1,4 +1,4 @@
-name: Python application
+name: Run unit tests on push
 
 on: [push]
 
@@ -9,6 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
