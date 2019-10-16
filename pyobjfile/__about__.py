@@ -1,5 +1,5 @@
 __title__ = "py-object-file"
-__version__ = "0.2.2b1"
+__version__ = "0.2.2b2"
 __summary__ = "A package to parse exutable and library object files, such as ELF and Mach-O."
 
 """
