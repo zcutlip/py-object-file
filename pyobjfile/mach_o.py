@@ -2118,10 +2118,10 @@ class Mach(object):
             self.mach.dump_section_contents(self.options)
 
 
-import six.moves.tkinter  # noqa: E402
+import tkinter  # noqa: E402
 # from Tkinter import *
 
-from six.moves.tkinter import (  # noqa: E402
+from tkinter import (  # noqa: E402
     Text,
     NONE,
     VERTICAL,
@@ -2138,7 +2138,7 @@ from six.moves.tkinter import (  # noqa: E402
     Tk
 )
 
-from six.moves.tkinter_ttk import (  # noqa: E402
+from tkinter.ttk import (  # noqa: E402
     Frame,
     Scrollbar,
     Treeview,
@@ -2492,7 +2492,7 @@ class MachFrame(Frame):
             num_archs = self.mach.get_num_archs()
             for i in range(num_archs):
                 arch_name = str(self.mach.get_architecture(i))
-                menu.add_command(label=arch_name, command=six.moves.tkinter._setit(self.selected_arch, arch_name))
+                menu.add_command(label=arch_name, command=tkinter._setit(self.selected_arch, arch_name))
 
     def refresh_frames(self):
         if self.lc_tree:
