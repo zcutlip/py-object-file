@@ -521,7 +521,7 @@ class Mach(object):
 
     def get_architecture_slice(self, arch_name):
         return self.content.get_architecture_slice(arch_name)
-    
+
     def get_architecture_slice_at_index(self, index):
         arch = self.get_architecture(index)
         _slice = None
@@ -890,6 +890,12 @@ class Mach(object):
                 lc = self.unpack_load_command (data)
                 self.commands.append (lc)
 
+        def data_seek(self, offset):
+            self.get_data().seek(self.file_off + offset)
+
+        def data_tell(self):
+            return self.get_data().tell() - self.file_off
+
         def get_data(self):
             if self.data:
                 self.data.set_byte_order(self.magic.get_byte_order())
@@ -1209,7 +1215,7 @@ class Mach(object):
 
         def is_64_bit(self):
             return self.magic.is_64_bit()
-        
+
         def get_symbols_by_name(self, symname):
             matches = []
             symbols = self.get_symtab()
