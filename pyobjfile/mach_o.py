@@ -1852,7 +1852,7 @@ class Mach(object):
             else:
                 s += "%#16.16x %#16.16x %#16.16x %#16.16x " % (self.vmaddr, self.vmsize, self.fileoff, self.filesize)
             s += "%s %s %3u %#8.8x" % (vm_prot_names[self.maxprot], vm_prot_names[self.initprot], self.nsects, self.flags)
-            s += ' ' + self.segname
+            s += ' ' + self.segname.decode("utf-8")
             return s
 
     class VersionMinLoadCommand(LoadCommand):
