@@ -2,7 +2,7 @@
 
 import json
 import optparse
-from io import StringIO
+import io
 import sys
 try:
     from pydwarf import dwarf
@@ -1270,7 +1270,7 @@ class SectionHeader(object):
 
     def get_contents_as_extractor(self):
         bytes = self.get_contents()
-        return file_extract.FileExtract(StringIO.StringIO(bytes),
+        return file_extract.FileExtract(io.BytesIO(bytes),
                                         self.elf.data.byte_order,
                                         self.elf.data.addr_size)
 
@@ -1338,7 +1338,7 @@ class ProgramHeader(object):
 
     def get_contents_as_extractor(self):
         bytes = self.get_contents()
-        return file_extract.FileExtract(StringIO.StringIO(bytes),
+        return file_extract.FileExtract(io.BytesIO(bytes),
                                         self.elf.data.byte_order,
                                         self.elf.data.addr_size)
 
@@ -1484,7 +1484,7 @@ class Note(object):
         self.name = data.read_size(namesz)
         data.seek((name_pos + namesz + 3) & ~3)
         self.desc = data.read_size(descsz)
-        self.data = file_extract.FileExtract(StringIO.StringIO(self.desc),
+        self.data = file_extract.FileExtract(io.BytesIO(self.desc),
                                              data.byte_order, data.addr_size)
 
     def dump(self, f=sys.stdout):
@@ -1657,7 +1657,7 @@ class GNUHash(object):
         h2 = h1 >> self.shift2
         # Test against the Bloom filter
         c = self.addr_size * 8
-        n = (h1 / c) & self.maskwords
+        n = (h1 // c) & self.maskwords
         bitmask = (1 << (h1 % c)) | (1 << (h2 % c))
         if (self.bloom[n] & bitmask) != bitmask:
             return None
@@ -1787,7 +1787,7 @@ class File(object):
             shstrtab.insert(sect_info['name'])
 
         # Encode the shstrtab data so we know how big it is
-        shstrtab_data = file_extract.FileEncode(StringIO.StringIO())
+        shstrtab_data = file_extract.FileEncode(io.BytesIO())
         shstrtab.encode(shstrtab_data)
         shstrtab_bytes = shstrtab_data.file.getvalue()
         #----------------------------------------------------------------------
@@ -1916,7 +1916,7 @@ class File(object):
         self.data.push_offset_and_seek(offset)
         bytes = self.data.read_size(size)
         self.data.pop_offset_and_seek()
-        return file_extract.FileExtract(StringIO.StringIO(bytes),
+        return file_extract.FileExtract(io.BytesIO(bytes),
                                         self.data.get_byte_order(),
                                         self.data.get_addr_size())
 
@@ -1968,9 +1968,9 @@ class File(object):
                     strtab = StringTable(sh.get_contents_as_extractor())
                     symtab_data_size = symtab_data.get_size()
                     if addr_size == 4:
-                        num_symbols = symtab_data_size / SYMENTRY_SIZE32
+                        num_symbols = symtab_data_size // SYMENTRY_SIZE32
                     elif addr_size == 8:
-                        num_symbols = symtab_data_size / SYMENTRY_SIZE64
+                        num_symbols = symtab_data_size // SYMENTRY_SIZE64
                     for i in range(num_symbols):
                         symbol = Symbol(index=i, addr_size=addr_size,
                                         data=symtab_data, strtab=strtab,
