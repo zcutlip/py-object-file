@@ -1657,7 +1657,7 @@ class GNUHash(object):
         h2 = h1 >> self.shift2
         # Test against the Bloom filter
         c = self.addr_size * 8
-        n = (h1 / c) & self.maskwords
+        n = (h1 // c) & self.maskwords
         bitmask = (1 << (h1 % c)) | (1 << (h2 % c))
         if (self.bloom[n] & bitmask) != bitmask:
             return None
@@ -1968,9 +1968,9 @@ class File(object):
                     strtab = StringTable(sh.get_contents_as_extractor())
                     symtab_data_size = symtab_data.get_size()
                     if addr_size == 4:
-                        num_symbols = symtab_data_size / SYMENTRY_SIZE32
+                        num_symbols = symtab_data_size // SYMENTRY_SIZE32
                     elif addr_size == 8:
-                        num_symbols = symtab_data_size / SYMENTRY_SIZE64
+                        num_symbols = symtab_data_size // SYMENTRY_SIZE64
                     for i in range(num_symbols):
                         symbol = Symbol(index=i, addr_size=addr_size,
                                         data=symtab_data, strtab=strtab,
