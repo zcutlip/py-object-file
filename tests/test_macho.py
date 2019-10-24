@@ -1,7 +1,7 @@
 from pyobjfile.mach_o import Mach
 import os
 
-DATA_PATH = os.path.join("tests", "data")
+DATA_PATH = os.path.join("tests", "data", "mach-o")
 
 HELLO_X86_64 = os.path.join(DATA_PATH, "hello-x86_64")
 HELLO_FAT = os.path.join(DATA_PATH, "hello-fat")
