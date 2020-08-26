@@ -1224,7 +1224,21 @@ class Mach(object):
                     matches.append(sym)
             return matches
 
+        def vmaddr_to_section(self, vmaddr):
+            section = None
+            for _section in self.sections:
+                if _section.contains_vmaddr(vmaddr):
+                    section = _section
+                    break
+            return section
 
+        def fileoff_to_section(self, fileoff):
+            section = None
+            for _section in self.sections:
+                if _section.contains_fileoff(fileoff):
+                    section = _section
+                    break
+            return section
 
     class LoadCommand(object):
         class Command(dict_utils.Enum):
@@ -1468,6 +1482,30 @@ class Mach(object):
             return file_extract.FileExtract(io.BytesIO(bytes),
                                             mach_file.data.get_byte_order(),
                                             mach_file.data.get_addr_size())
+
+        def contains_vmaddr(self, vmaddr):
+            contains = False
+            start = self.addr
+            end = self.addr + self.size
+            if vmaddr >= start and vmaddr < end:
+                contains = True
+            return contains
+
+        def contains_fileoff(self, fileoff):
+            contains = False
+            start = self.offset
+            end = self.offset + self.size
+            if fileoff >= start and fileoff < end:
+                contains = True
+            return contains
+
+        def vmaddr_to_fileoffset(self, vmaddr):
+            file_off = -1
+            if self.contains_vmaddr(vmaddr):
+                sect_off = vmaddr - self.addr
+                file_off = self.offset + sect_off
+
+            return file_off
 
     class DylibLoadCommand(LoadCommand):
         def __init__(self, lc):
