@@ -1456,8 +1456,16 @@ class Mach(object):
         def unpack(self, is_64, data):
             self.file_offset = data.tell()
             self.is_64 = is_64
-            self.sectname = data.get_fixed_length_c_string (16, '', True)
-            self.segname = data.get_fixed_length_c_string (16, '', True)
+            sectname = data.get_fixed_length_c_string (16, '', True)
+            if not isinstance(sectname, str):
+                sectname = sectname.decode("utf8")
+            self.sectname = sectname
+            segname = data.get_fixed_length_c_string (16, '', True)
+
+            if not isinstance(segname, str):
+                segname = segname.decode("utf8")
+            self.segname = segname
+
             if self.is_64:
                 self.addr, self.size = data.get_n_uint64(2)
                 self.offset, self.align, self.reloff, self.nreloc, self.flags, self.reserved1, self.reserved2, self.reserved3 = data.get_n_uint32(8)
@@ -1535,7 +1543,8 @@ class Mach(object):
             # byte_order_char = mach_file.magic.get_byte_order()
             name_offset, self.timestamp, self.current_version, self.compatibility_version = data.get_n_uint32(4)
             data.seek(self.file_off + name_offset, 0)
-            self.name = data.get_fixed_length_c_string(self.length - 24)
+            name = data.get_fixed_length_c_string(self.length - 24)
+            self.name = name.decode("utf-8")
 
         def get_item_dictionary(self):
             item_dict = Mach.LoadCommand.get_item_dictionary(self)
@@ -1869,7 +1878,10 @@ class Mach(object):
 
         def unpack(self, mach_file, data):
             is_64 = self.command.get_enum_value() == LC_SEGMENT_64
-            self.segname = data.get_fixed_length_c_string (16, '', True)
+            segname = data.get_fixed_length_c_string (16, '', True)
+            if not isinstance(segname, str):
+                segname = segname.decode("utf-8")
+            self.segname = segname
             if is_64:
                 self.vmaddr, self.vmsize, self.fileoff, self.filesize = data.get_n_uint64(4)
             else:
@@ -1905,7 +1917,7 @@ class Mach(object):
             else:
                 s += "%#16.16x %#16.16x %#16.16x %#16.16x " % (self.vmaddr, self.vmsize, self.fileoff, self.filesize)
             s += "%s %s %3u %#8.8x" % (vm_prot_names[self.maxprot], vm_prot_names[self.initprot], self.nsects, self.flags)
-            s += ' ' + self.segname.decode("utf-8")
+            s += ' ' + self.segname
             return s
 
     class VersionMinLoadCommand(LoadCommand):
