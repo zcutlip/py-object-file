@@ -1943,20 +1943,37 @@ class Mach(object):
         def __init__(self, lc):
             Mach.LoadCommand.__init__(self, lc.command, lc.length, lc.file_off)
             self.version = 0
+            self.version_tuple = None
+            self.version_string = None
+
+        def _unpack_version_tuple(self, version):
+            _vtuple = (
+                (version >> 40) & 0xFFFFFFFFFF,
+                (version >> 30) & 0x3ff,
+                (version >> 20) & 0x3ff,
+                (version >> 10) & 0x3ff,
+                version & 0x3ff
+            )
+            return _vtuple
+
+        def _version_to_string(self, version_tuple):
+            _vstring = "%u.%u.%u.%u.%u" % version_tuple
+            return _vstring
 
         def get_item_dictionary(self):
             item_dict = Mach.LoadCommand.get_item_dictionary(self)
-            v = self.version
-            item_dict['summary'] = "version = %u.%u.%u.%u.%u" % ((v >> 40) & 0xFFFFFFFFFF, (v >> 30) & 0x3ff, (v >> 20) & 0x3ff, (v >> 10) & 0x3ff, v & 0x3ff)
+            item_dict['summary'] = "version = %s" % self.version_string
             return item_dict
 
         def unpack(self, mach_file, data):
             self.version = data.get_uint64()
+            self.version_tuple = self._unpack_version_tuple(self.version)
+            self.version_string = self._version_to_string(self.version_tuple)
+
 
         def __str__(self):
             s = Mach.LoadCommand.__str__(self)
-            v = self.version
-            s += "version = %u.%u.%u.%u.%u" % ((v >> 40) & 0xFFFFFFFFFF, (v >> 30) & 0x3ff, (v >> 20) & 0x3ff, (v >> 10) & 0x3ff, v & 0x3ff)
+            s += "version = %s" % self.version_string
             return s
 
     class LinkerOptionLoadCommand(LoadCommand):
