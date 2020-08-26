@@ -1103,6 +1103,21 @@ class Mach(object):
                     return section
             return None
 
+        def get_section_by_segname_sectname(self, segname, sectname):
+            section = None
+            seg = None
+            for _seg in self.segments:
+                if _seg.segname == segname:
+                    seg = _seg
+                    break
+            if seg is not None:
+                for _section in seg.sections:
+                    if _section.sectname == sectname:
+                        section = _section
+                        break
+
+            return section
+
         def read_data(self, offset, size):
             '''Read raw data from the file at offset and size and return a
                file_extract.FileExtract that has the byte order and address
