@@ -2229,7 +2229,7 @@ def user_specified_options(options):
         return True
     if options.outfile:
         return True
-    if dwarf.have_dwarf_options(options):
+    if dwarf and dwarf.have_dwarf_options(options):
         return True
     return False
 
@@ -2248,9 +2248,11 @@ if __name__ == '__main__':
     parser.add_option('-c', '--compare', action='store_true', dest='compare', help='compare two mach files', default=False)
     parser.add_option('-t', '--tk', action='store_true', dest='tk', help='Use TK to display an interactive window', default=False)
     parser.add_option('-o', '--out', type='string', dest='outfile', help='Used in conjunction with the --section=NAME option to save a single section\'s data to disk.', default=None)
-    dwarf.append_dwarf_options(parser)
+    if dwarf is not None:
+        dwarf.append_dwarf_options(parser)
     (options, mach_files) = parser.parse_args()
-    dwarf.enable_colors = options.color
+    if dwarf is not None:
+        dwarf.enable_colors = options.color
     if options.tk:
         # We had to move the tk stuff to a separate file to support testing on github
         # so disable this option for now
