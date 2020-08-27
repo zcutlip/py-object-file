@@ -143,7 +143,7 @@ def test_get_segments_x86_64_01():
 
 def test_get_segments_x86_64_02():
     text_segment = setup_get_seg_num(HELLO_X86_64, 0, 1)
-    assert b'__TEXT' == text_segment.segname
+    assert '__TEXT' == text_segment.segname
 
 
 def test_get_segments_x86_64_03():
@@ -158,7 +158,7 @@ def test_get_segments_arm64_01():
 
 def test_get_segments_arm64_02():
     data_segment = setup_get_seg_num(HELLO_ARM64, 0, 3)
-    assert b'__DATA' == data_segment.segname
+    assert '__DATA' == data_segment.segname
 
 
 def test_get_segments_arm64_03():
@@ -176,7 +176,7 @@ def test_sections_x86_64_02():
     text_segment = setup_get_seg_num(HELLO_X86_64, 0, 1)
     text_sections = text_segment.sections
     text_text = text_sections[0]
-    assert b'__text' == text_text.sectname
+    assert '__text' == text_text.sectname
 
 
 def test_sections_x86_64_03():
@@ -196,7 +196,7 @@ def test_sections_arm64_02():
     text_segment = setup_get_seg_num(HELLO_ARM64, 0, 1)
     text_sections = text_segment.sections
     text_text = text_sections[0]
-    assert b'__text' == text_text.sectname
+    assert '__text' == text_text.sectname
 
 
 def test_sections_arm64_03():
