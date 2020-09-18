@@ -1047,15 +1047,15 @@ class Mach(object):
             if self.dwarf == -1:
                 self.dwarf = None
             if dwarf is not None:
-                debug_abbrev_data = self.get_section_contents_by_name(b'__debug_abbrev')
-                debug_info_data = self.get_section_contents_by_name(b'__debug_info')
+                debug_abbrev_data = self.get_section_contents_by_name('__debug_abbrev')
+                debug_info_data = self.get_section_contents_by_name('__debug_info')
                 if debug_abbrev_data or debug_info_data:
-                    debug_aranges_data = self.get_section_contents_by_name(b'__debug_aranges')
-                    debug_line_data = self.get_section_contents_by_name(b'__debug_line')
-                    debug_ranges_data = self.get_section_contents_by_name(b'__debug_ranges')
-                    debug_str_data = self.get_section_contents_by_name(b'__debug_str')
-                    apple_names_data = self.get_section_contents_by_name(b'__apple_names')
-                    apple_types_data = self.get_section_contents_by_name(b'__apple_types')
+                    debug_aranges_data = self.get_section_contents_by_name('__debug_aranges')
+                    debug_line_data = self.get_section_contents_by_name('__debug_line')
+                    debug_ranges_data = self.get_section_contents_by_name('__debug_ranges')
+                    debug_str_data = self.get_section_contents_by_name('__debug_str')
+                    apple_names_data = self.get_section_contents_by_name('__apple_names')
+                    apple_types_data = self.get_section_contents_by_name('__apple_types')
                     self.dwarf = dwarf.DWARF(debug_abbrev_data, debug_aranges_data, debug_info_data, debug_line_data, debug_ranges_data, debug_str_data, apple_names_data, apple_types_data)
             return self.dwarf
 
@@ -1193,7 +1193,7 @@ class Mach(object):
                 if lc_symtab:
                     symtab_offset = self.file_off
                     if self.data.is_in_memory():
-                        linkedit_segment = self.get_segment(b'__LINKEDIT')
+                        linkedit_segment = self.get_segment('__LINKEDIT')
                         if linkedit_segment:
                             linkedit_vmaddr = linkedit_segment.vmaddr
                             linkedit_fileoff = linkedit_segment.fileoff
